@@ -1,0 +1,5 @@
+streamlit==1.35.0  ## Required for the interactive UI
+pandas==2.2.2      ## For data processing
+numpy==1.26.4      ## For data processing
+requests==2.32.3   ##For fetching transaction data from the Covalent API
+openpyxl==3.1.2    ## Required to read Excel input files like Wallet id.xlsx 
