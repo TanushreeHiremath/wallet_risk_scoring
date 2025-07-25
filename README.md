@@ -2,7 +2,6 @@
 
 A Python + Streamlit-based application that analyzes Ethereum wallet interactions with the Compound Protocol (V2/V3) and assigns each wallet a **risk score (0–1000)** based on its transaction history.
 
----
 
 ## 📦 Features
 
@@ -13,7 +12,12 @@ A Python + Streamlit-based application that analyzes Ethereum wallet interaction
 - Offers a clean UI built with **Streamlit**
 - Supports CSV export of risk analysis
 
----
+##  Feature Normalization
+Before applying weights, each feature is min-max normalized:
+
+       normalized_value= (x-min(x))/(max(z)-min(x))
+​
+This scales each feature to a value between 0 and 1, making them comparable regardless of their original range.
 
 ## 🧠 Risk Scoring Logic
 
@@ -28,7 +32,6 @@ For each wallet:
 ### 📊 Scoring Formula:
 Each feature is normalized using min-max scaling. The raw risk score is computed as:
 
-```python
 score = (
     0.4 * supply_tx_norm +
     0.3 * repay_tx_norm -
@@ -38,72 +41,49 @@ score = (
 
 Then scaled to the range 0 to 1000:
 
-python
-Copy code
 scaled_score = (score - min_score) / (max_score - min_score) * 1000
-🚦 Risk Classification
+
+## Risk Classification
+
 Score Range	Risk Level	Color
 800 - 1000	Low	🟢 Green
 600 - 799	Medium	🟡 Gold
 400 - 599	High	🟠 Orange
 0 - 399	Extreme	🔴 Red
 
-🖥️ Streamlit UI
+## Streamlit UI
 Launch the app locally:
 
-bash
-Copy code
 streamlit run streamlit_app.py
+
 UI Features:
-Paste wallet addresses (one per line)
 
-Choose Compound protocol version
-
-Optional checkboxes:
-
-Include historical transactions
-
-Weight recent activity higher (feature-ready)
+- Paste wallet addresses (one per line)
+- Choose Compound protocol version
+- Optional checkboxes:
+     - Include historical transactions
+     - Weight recent activity higher (feature-ready)
 
 View:
-
-Risk scores
-
-Borrow ratio (%)
-
-Risk classification badges
-
-Etherscan & Debank links
+  - Risk scores
+  - Borrow ratio (%)
+  - Risk classification badges
+  - Etherscan & Debank links
 
 Export results to CSV
 
-🧪 Sample Output
-Wallet	Score	Risk	Borrow Ratio	View
-0xfaa0...f2	732	High	47.5%	🔗 View Details
-
-🛠️ Installation
-Clone the repo
-
-Install dependencies:
-
-bash
-Copy code
-pip install -r requirements.txt
-Add your Covalent API Key in the script or as an environment variable.
-
-Run the main script (batch):
-
-bash
-Copy code
-python main.py
+### 🛠️ Installation
+1.Clone the repo
+2.Install dependencies:
+  - pip install -r requirements.txt
+3.Add your Covalent API Key in the script or as an environment variable.
+4.Run the main script (batch):
+  - python main.py
 Or launch UI:
+  - streamlit run streamlit_app.py
+    
+## 📁 Project Structure
 
-bash
-Copy code
-streamlit run streamlit_app.py
-📁 Project Structure
-python
-Copy code
 ├── main.py                # CLI version to score wallets in bulk
 ├── streamlit_app.py       # Web app interface
 ├── utils.py               # Logic for fetching, processing, scoring
@@ -111,11 +91,10 @@ Copy code
 ├── wallet_risk_scores.csv # Output CSV
 ├── requirements.txt       # Dependencies
 ├── README.md              # Project documentation
-📚 Justification for Features
+
+## 📚 Justification for Features
+
 Supply & Repay: Positive behaviors that reduce protocol risk
-
 Borrow: Adds risk if uncollateralized or frequent
-
 Liquidation: Major risk indicator for default or insolvency
-
 Borrow Ratio: Indicates risky usage pattern
