@@ -33,11 +33,20 @@ For each wallet:
 Each feature is normalized using min-max scaling. The raw risk score is computed as:
 
 score = (
-    0.4 * supply_tx_norm +
-    0.3 * repay_tx_norm -
-    0.1 * borrow_tx_norm -
-    0.2 * liquidation_count_norm
+    0.4 * supply_tx_norm +         # Positive impact: more supply = safer
+    0.3 * repay_tx_norm -          # Positive impact: more repayments = safer
+    0.1 * borrow_tx_norm -         # Negative impact: more borrowing = riskier
+    0.2 * liquidation_count_norm   # Negative impact: more liquidations = riskier
 )
+
+| Component              | Weight | Meaning                                                            |
+| ---------------------- | ------ | ------------------------------------------------------------------ |
+| `0.4 * supply_tx_norm` | 0.4    | **Most important positive** factor. Supplying assets reduces risk. |
+| `0.3 * repay_tx_norm`  | 0.3    | Repaying borrowed assets is good behavior → lowers risk.           |
+| `0.1 * borrow_tx_norm` | 0.1    | Borrowing increases risk slightly → low negative weight.           |
+| `0.2 * liquidation...` | 0.2    | Liquidation is a red flag → medium negative weight.                |
+
+
 
 Then scaled to the range 0 to 1000:
 
@@ -46,10 +55,10 @@ scaled_score = (score - min_score) / (max_score - min_score) * 1000
 ## Risk Classification
 
 Score Range	Risk Level	Color
-800 - 1000	Low	🟢 Green
-600 - 799	Medium	🟡 Gold
-400 - 599	High	🟠 Orange
-0 - 399	Extreme	🔴 Red
+800 - 1000	Low	      🟢 Green
+600 - 799	Medium	      🟡 Gold
+400 - 599	High	      🟠 Orange
+0 - 399	Extreme      🔴 Red
 
 ## Streamlit UI
 Launch the app locally:
